@@ -1,0 +1,29 @@
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.session
+telethon_session/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs and caches
+*.log
+.cache/
