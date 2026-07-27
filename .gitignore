@@ -4,6 +4,7 @@
 !.env.example
 *.session
 telethon_session/
+/run/secrets/
 
 # Python
 __pycache__/
@@ -27,3 +28,11 @@ Thumbs.db
 # Logs and caches
 *.log
 .cache/
+
+# Docker and local data volumes
+.docker-data/
+data/
+
+# Test artifacts
+htmlcov/
+.coverage
