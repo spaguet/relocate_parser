@@ -38,7 +38,7 @@
 
 | Промпт | Заметки |
 |:------:|---------|
-| 0 | Создан docs/product-decisions.md; owner-critical решения — pending, технические defaults — proposed. Ожидаются ответы владельца (§5 product-decisions). |
+| 0 | Product decisions v0.2: Florianópolis/BR, RU, 8 тем быта, Claude, test mode без оплаты, источники/тарифы через admin, simple auth. Контрольный набор — ждём файл от владельца. |
 | 1 | |
 | 2 | |
 | 3 | |
