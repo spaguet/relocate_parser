@@ -11,6 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from relocate_helper.admin.sources import SourceRegistryService
 from relocate_helper.common.config import Settings
 from relocate_helper.db.repository import Database
+from relocate_helper.ingestion.jobs import IngestionJobService
+from relocate_helper.ingestion.telegram.admin import TelegramIngestionAdminService
 from relocate_helper.storage.deletion import ContentDeletionService
 from relocate_helper.storage.document_service import DocumentStorageService
 from relocate_helper.storage.protocol import ObjectStorage
@@ -53,3 +55,14 @@ def get_deletion_service(
     database: Database = Depends(get_database),
 ) -> ContentDeletionService:
     return ContentDeletionService(storage, database)
+
+
+def get_ingestion_job_service() -> IngestionJobService:
+    return IngestionJobService()
+
+
+def get_telegram_ingestion_admin(
+    source_registry: SourceRegistryService = Depends(get_source_registry),
+    job_service: IngestionJobService = Depends(get_ingestion_job_service),
+) -> TelegramIngestionAdminService:
+    return TelegramIngestionAdminService(source_registry, job_service)

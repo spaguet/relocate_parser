@@ -24,6 +24,7 @@ dependencies = [
     "rq>=2.0.0",
     "sqlalchemy[asyncio]>=2.0.0",
     "structlog>=24.4.0",
+    "telethon>=1.36.0",
     "uvicorn[standard]>=0.30.0",
 ]
 
@@ -39,6 +40,7 @@ dev = [
 [project.scripts]
 relocate-helper-api = "relocate_helper.main:main"
 relocate-helper-worker = "relocate_helper.workers.main:main"
+relocate-helper-telegram-auth = "relocate_helper.ingestion.telegram.auth_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/relocate_helper"]
@@ -60,7 +62,7 @@ packages = ["relocate_helper"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["aiobotocore.*", "asyncpg.*", "pgvector.*", "filetype.*", "botocore.*"]
+module = ["aiobotocore.*", "asyncpg.*", "pgvector.*", "filetype.*", "botocore.*", "telethon.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

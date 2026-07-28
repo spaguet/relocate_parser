@@ -7,7 +7,13 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from relocate_helper.db.enums import DocumentStatus, SourceStatus, SourceType
+from relocate_helper.db.enums import (
+    DocumentStatus,
+    IngestionJobStatus,
+    IngestionJobType,
+    SourceStatus,
+    SourceType,
+)
 
 
 class SourceCreateRequest(BaseModel):
@@ -80,6 +86,37 @@ class DocumentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     current_version: DocumentVersionResponse | None = None
+
+
+class TelegramSyncRequest(BaseModel):
+    job_type: IngestionJobType = IngestionJobType.INCREMENTAL_SYNC
+    since: datetime | None = None
+    until: datetime | None = None
+
+
+class TelegramSyncResponse(BaseModel):
+    job_id: int
+    rq_job_id: str
+    idempotency_key: str
+    created: bool
+
+
+class IngestionJobResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    source_id: int | None
+    job_type: IngestionJobType
+    status: IngestionJobStatus
+    idempotency_key: str
+    cursor: str | None
+    progress: dict[str, Any] | None
+    error_message: str | None
+    started_at: datetime | None
+    finished_at: datetime | None
+    metadata: dict[str, Any] | None = Field(default=None, validation_alias="metadata_")
+    created_at: datetime
+    updated_at: datetime
 
 
 class DeleteDocumentContentRequest(BaseModel):

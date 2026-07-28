@@ -16,7 +16,7 @@
 | 1 | [x] | 2026-07-27 | Создать каркас проекта и локальную инфраструктуру |
 | 2 | [x] | 2026-07-28 | Реализовать модель данных и миграции PostgreSQL |
 | 3 | [x] | 2026-07-28 | Реализовать объектное хранилище и реестр источников |
-| 4 | [ ] | | Реализовать разрешённый импорт Telegram |
+| 4 | [x] | 2026-07-28 | Реализовать разрешённый импорт Telegram |
 | 5 | [ ] | | Реализовать ручную загрузку и разрешённый веб-импорт |
 | 6 | [ ] | | Реализовать нормализацию, обезличивание, дедупликацию и chunking |
 | 7 | [ ] | | Реализовать LLM-абстракцию, классификацию и извлечение фактов |
@@ -42,7 +42,7 @@
 | 1 | Каркас: src/relocate_helper (все модули), FastAPI /health/live|ready, structlog, pydantic-settings, RQ worker, Docker Compose (postgres+pgvector, redis, minio), 7 smoke tests. ADR: RQ. Docker не проверен — не установлен на машине. |
 | 2 | PostgreSQL schema: 27 tables, async SQLAlchemy 2.x, Alembic 001_initial, pgvector+FTS, seed BR/Florianópolis/8 topics/4 plans, Database repository, docs/data-model.md. Integration tests skip без Postgres. |
 | 3 | ObjectStorage (S3+memory), content-addressed keys, MIME/quarantine, DocumentStorageService (dedup), SourceRegistryService (encrypted sync_config), ContentDeletionService, admin API /admin/sources|documents. 21 tests pass; integration skip без Postgres. |
-| 4 | |
+| 4 | Telethon adapter + FakeTelegramClient, sync service (initial/incremental, edit window, delete detection, FloodWait requeue), IngestionJobService, domain events, RQ task, CLI `relocate-helper-telegram-auth`, admin POST /sync + jobs API. 12 tests (5 unit + 7 integration skip без Postgres). |
 | 5 | |
 | 6 | |
 | 7 | |

@@ -12,9 +12,12 @@ from sqlalchemy.orm import selectinload
 from relocate_helper.admin.schemas import (
     DeleteDocumentContentRequest,
     DocumentResponse,
+    IngestionJobResponse,
     SourceCreateRequest,
     SourceResponse,
     SourceUpdateRequest,
+    TelegramSyncRequest,
+    TelegramSyncResponse,
 )
 from relocate_helper.admin.sources import (
     SourceCreateInput,
@@ -25,11 +28,17 @@ from relocate_helper.admin.sources import (
 from relocate_helper.api.dependencies import (
     get_db_session,
     get_deletion_service,
+    get_ingestion_job_service,
     get_source_registry,
+    get_telegram_ingestion_admin,
 )
-from relocate_helper.db.enums import DocumentStatus, SourceStatus
+from relocate_helper.db.enums import DocumentStatus, IngestionJobStatus, SourceStatus
 from relocate_helper.db.models.documents import Document
+from relocate_helper.db.models.jobs import IngestionJob
 from relocate_helper.db.models.sources import Source
+from relocate_helper.ingestion.jobs import IngestionJobNotFoundError, IngestionJobService
+from relocate_helper.ingestion.telegram.admin import TelegramIngestionAdminService
+from relocate_helper.ingestion.telegram.exceptions import TelegramSourceConfigError
 from relocate_helper.storage.deletion import ContentDeletionService
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -37,6 +46,8 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 RegistryDep = Annotated[SourceRegistryService, Depends(get_source_registry)]
 SessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 DeletionDep = Annotated[ContentDeletionService, Depends(get_deletion_service)]
+JobServiceDep = Annotated[IngestionJobService, Depends(get_ingestion_job_service)]
+TelegramAdminDep = Annotated[TelegramIngestionAdminService, Depends(get_telegram_ingestion_admin)]
 
 
 def _source_response(source: Source, registry: SourceRegistryService) -> SourceResponse:
@@ -137,6 +148,72 @@ async def disable_source(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     await session.refresh(source)
     return _source_response(source, registry)
+
+
+@router.post(
+    "/sources/{source_id}/sync",
+    response_model=TelegramSyncResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def sync_telegram_source(
+    source_id: int,
+    body: TelegramSyncRequest,
+    telegram_admin: TelegramAdminDep,
+    session: SessionDep,
+) -> TelegramSyncResponse:
+    try:
+        async with session.begin():
+            result = await telegram_admin.enqueue_sync(
+                session,
+                source_id=source_id,
+                job_type=body.job_type,
+                since=body.since,
+                until=body.until,
+            )
+    except SourceNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except TelegramSourceConfigError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    return TelegramSyncResponse(
+        job_id=result.job_id,
+        rq_job_id=result.rq_job_id,
+        idempotency_key=result.idempotency_key,
+        created=result.created,
+    )
+
+
+@router.get("/ingestion-jobs", response_model=list[IngestionJobResponse])
+async def list_ingestion_jobs(
+    session: SessionDep,
+    source_id: int | None = None,
+    status_filter: Annotated[IngestionJobStatus | None, Query(alias="status")] = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> list[IngestionJobResponse]:
+    query = select(IngestionJob).order_by(IngestionJob.id.desc()).limit(limit)
+    if source_id is not None:
+        query = query.where(IngestionJob.source_id == source_id)
+    if status_filter is not None:
+        query = query.where(IngestionJob.status == status_filter)
+    jobs = list(await session.scalars(query))
+    return [IngestionJobResponse.model_validate(job) for job in jobs]
+
+
+@router.post("/ingestion-jobs/{job_id}/cancel", response_model=IngestionJobResponse)
+async def cancel_ingestion_job(
+    job_id: int,
+    jobs: JobServiceDep,
+    session: SessionDep,
+) -> IngestionJobResponse:
+    try:
+        async with session.begin():
+            job = await jobs.get_job(session, job_id)
+            job = await jobs.cancel_job(session, job)
+    except IngestionJobNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    await session.refresh(job)
+    return IngestionJobResponse.model_validate(job)
 
 
 @router.get("/documents", response_model=list[DocumentResponse])

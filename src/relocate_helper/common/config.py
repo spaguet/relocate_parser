@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 from functools import lru_cache
+from pathlib import Path
 from typing import Self
 
 from pydantic import SecretStr, field_validator, model_validator
@@ -66,6 +67,14 @@ class Settings(BaseSettings):
         "application/zip,application/gzip,image/jpeg,image/png,image/webp,"
         "image/gif,audio/mpeg,video/mp4,video/webm"
     )
+
+    telegram_api_id: int = 0
+    telegram_api_hash: SecretStr = SecretStr("fake_api_hash_replace_me")
+    telethon_session_path: Path | None = None
+    telethon_session_string: SecretStr | None = None
+    telegram_sync_page_size: int = 100
+    telegram_edit_check_window: int = 100
+    telegram_flood_wait_max_seconds: int = 3600
 
     @property
     def allowed_mime_types_set(self) -> frozenset[str]:
