@@ -7,21 +7,30 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from relocate_helper.admin.routes import router as admin_router
 from relocate_helper.common.config import Settings, get_settings
 from relocate_helper.common.health import gather_readiness
 from relocate_helper.common.logging import configure_logging, get_logger
 from relocate_helper.common.middleware import CorrelationIdMiddleware
+from relocate_helper.db.repository import Database
+from relocate_helper.db.session import create_engine, create_session_factory
+from relocate_helper.storage.factory import create_object_storage
 
 logger = get_logger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
-    settings = get_settings()
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    settings: Settings = app.state.settings
     configure_logging(log_level=settings.log_level, json_logs=settings.log_json)
+    engine = create_engine(settings)
+    app.state.session_factory = create_session_factory(engine)
+    app.state.object_storage = create_object_storage(settings)
+    app.state.database = Database(app.state.session_factory)
     logger.info("application_starting", app_env=settings.app_env.value)
     yield
     logger.info("application_stopping")
+    await engine.dispose()
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -37,6 +46,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = resolved
     app.add_middleware(CorrelationIdMiddleware)
+    app.include_router(admin_router)
 
     @app.get("/health/live", tags=["health"])
     async def health_live() -> dict[str, str]:

@@ -58,6 +58,25 @@ class Settings(BaseSettings):
     embedding_dimension: int = 1024
     embedding_model_name: str = "voyage-3"
 
+    storage_key_prefix: str = "raw"
+    max_upload_bytes: int = 52_428_800  # 50 MiB
+    s3_server_side_encryption: bool = True
+    allowed_mime_types: str = (
+        "text/plain,text/markdown,text/csv,application/json,application/pdf,"
+        "application/zip,application/gzip,image/jpeg,image/png,image/webp,"
+        "image/gif,audio/mpeg,video/mp4,video/webm"
+    )
+
+    @property
+    def allowed_mime_types_set(self) -> frozenset[str]:
+        values = {item.strip() for item in self.allowed_mime_types.split(",") if item.strip()}
+        return frozenset(values)
+
+    @property
+    def source_secrets_key(self) -> SecretStr:
+        """Key for encrypting sensitive source sync_config fields."""
+        return self.secret_key
+
     @property
     def database_url_async(self) -> str:
         """SQLAlchemy async URL derived from DATABASE_URL."""

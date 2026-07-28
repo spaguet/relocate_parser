@@ -150,9 +150,7 @@ async def seed_reference_data(session: AsyncSession) -> None:
         alias_stmt = (
             insert(GeoAlias)
             .values(city_id=city.id, district_id=None, alias=alias, language=language)
-            .on_conflict_do_nothing(
-                index_elements=["city_id", "district_id", "alias", "language"]
-            )
+            .on_conflict_do_nothing(index_elements=["city_id", "district_id", "alias", "language"])
         )
         await session.execute(alias_stmt)
 

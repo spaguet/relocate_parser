@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -14,7 +13,6 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Index,
-    Integer,
     Numeric,
     String,
     Text,

@@ -12,7 +12,6 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     String,
-    Text,
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB

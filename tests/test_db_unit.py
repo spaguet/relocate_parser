@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from relocate_helper.common.config import Settings
-from relocate_helper.db.base import Base, DEFAULT_EMBEDDING_DIMENSION
 import relocate_helper.db.models  # noqa: F401
+from relocate_helper.common.config import Settings
+from relocate_helper.db.base import DEFAULT_EMBEDDING_DIMENSION, Base
 
 
 def test_all_expected_tables_registered() -> None:

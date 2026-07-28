@@ -22,7 +22,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from relocate_helper.db.base import Base, DEFAULT_EMBEDDING_DIMENSION, TimestampMixin, VersionMixin
+from relocate_helper.db.base import DEFAULT_EMBEDDING_DIMENSION, Base, TimestampMixin, VersionMixin
 from relocate_helper.db.enums import ChunkStatus, DocumentStatus
 from relocate_helper.db.types import JsonDict
 

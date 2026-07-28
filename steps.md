@@ -15,7 +15,7 @@
 | 0 | [x] | 2026-07-25 | Зафиксировать открытые продуктовые решения |
 | 1 | [x] | 2026-07-27 | Создать каркас проекта и локальную инфраструктуру |
 | 2 | [x] | 2026-07-28 | Реализовать модель данных и миграции PostgreSQL |
-| 3 | [ ] | | Реализовать объектное хранилище и реестр источников |
+| 3 | [x] | 2026-07-28 | Реализовать объектное хранилище и реестр источников |
 | 4 | [ ] | | Реализовать разрешённый импорт Telegram |
 | 5 | [ ] | | Реализовать ручную загрузку и разрешённый веб-импорт |
 | 6 | [ ] | | Реализовать нормализацию, обезличивание, дедупликацию и chunking |
@@ -41,7 +41,7 @@
 | 0 | Product decisions v0.2: Florianópolis/BR, RU, 8 тем быта, Claude, test mode без оплаты, источники/тарифы через admin, simple auth. Контрольный набор — ждём файл от владельца. |
 | 1 | Каркас: src/relocate_helper (все модули), FastAPI /health/live|ready, structlog, pydantic-settings, RQ worker, Docker Compose (postgres+pgvector, redis, minio), 7 smoke tests. ADR: RQ. Docker не проверен — не установлен на машине. |
 | 2 | PostgreSQL schema: 27 tables, async SQLAlchemy 2.x, Alembic 001_initial, pgvector+FTS, seed BR/Florianópolis/8 topics/4 plans, Database repository, docs/data-model.md. Integration tests skip без Postgres. |
-| 3 | |
+| 3 | ObjectStorage (S3+memory), content-addressed keys, MIME/quarantine, DocumentStorageService (dedup), SourceRegistryService (encrypted sync_config), ContentDeletionService, admin API /admin/sources|documents. 21 tests pass; integration skip без Postgres. |
 | 4 | |
 | 5 | |
 | 6 | |

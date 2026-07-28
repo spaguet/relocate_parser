@@ -43,6 +43,8 @@ docker compose up --build -d
 | API | http://localhost:8000 |
 | Health (live) | http://localhost:8000/health/live |
 | Health (ready) | http://localhost:8000/health/ready |
+| Admin API (sources) | http://localhost:8000/admin/sources |
+| OpenAPI docs | http://localhost:8000/docs |
 | PostgreSQL | localhost:5432 |
 | Redis | localhost:6379 |
 | MinIO (S3) | http://localhost:9000 (консоль: :9001) |
@@ -94,15 +96,16 @@ make format
 
 ```text
 src/relocate_helper/
-├── api/           # FastAPI app, health endpoints
+├── api/           # FastAPI app, health endpoints, dependencies
+├── admin/         # Source registry API, schemas, sync_config crypto
+├── storage/       # ObjectStorage (S3/memory), document versions, deletion
 ├── bot/           # Telegram bot (aiogram) — позже
-├── admin/         # Admin API/UI — позже
 ├── ingestion/     # telegram, web, youtube, files
 ├── processing/    # normalize, chunk, extract — позже
 ├── retrieval/     # hybrid search — позже
 ├── answering/     # answer generation — позже
 ├── billing/       # plans, limits — позже
-├── db/            # models, migrations — промпт 2
+├── db/            # models, migrations, repository
 ├── workers/       # RQ worker
 └── common/        # config, logging, health
 ```

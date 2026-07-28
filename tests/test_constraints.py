@@ -5,12 +5,12 @@ from __future__ import annotations
 import asyncio
 import os
 from decimal import Decimal
+from pathlib import Path
 
 import asyncpg
 import pytest
 from alembic import command
 from alembic.config import Config
-from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -28,7 +28,6 @@ from relocate_helper.db.models.geo import City
 from relocate_helper.db.models.knowledge import Fact
 from relocate_helper.db.models.sources import Source
 from relocate_helper.db.models.topics import Topic
-
 from relocate_helper.db.repository import Database
 
 ROOT = Path(__file__).resolve().parents[1]

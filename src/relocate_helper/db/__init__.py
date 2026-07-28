@@ -1,6 +1,6 @@
 """PostgreSQL models, migrations, sessions and transactional helpers."""
 
-from relocate_helper.db.base import Base, DEFAULT_EMBEDDING_DIMENSION
+from relocate_helper.db.base import DEFAULT_EMBEDDING_DIMENSION, Base
 from relocate_helper.db.enums import (
     ChunkStatus,
     DocumentStatus,
@@ -41,9 +41,9 @@ from relocate_helper.db.models import (
     Query,
     Source,
     Subscription,
+    Tombstone,
     Topic,
     TopicAlias,
-    Tombstone,
     UsageEvent,
     User,
 )
