@@ -55,6 +55,21 @@ class Settings(BaseSettings):
 
     health_check_timeout_seconds: float = 3.0
 
+    embedding_dimension: int = 1024
+    embedding_model_name: str = "voyage-3"
+
+    @property
+    def database_url_async(self) -> str:
+        """SQLAlchemy async URL derived from DATABASE_URL."""
+        url = self.database_url
+        if url.startswith("postgresql+asyncpg://"):
+            return url
+        if url.startswith("postgresql://"):
+            return "postgresql+asyncpg://" + url.removeprefix("postgresql://")
+        if url.startswith("postgres://"):
+            return "postgresql+asyncpg://" + url.removeprefix("postgres://")
+        return url
+
     @field_validator("log_level")
     @classmethod
     def normalize_log_level(cls, value: str) -> str:
@@ -86,9 +101,7 @@ class Settings(BaseSettings):
             missing.append("S3_SECRET_KEY (must not use development default)")
 
         if missing:
-            raise ValueError(
-                "Production configuration is incomplete. Set: " + ", ".join(missing)
-            )
+            raise ValueError("Production configuration is incomplete. Set: " + ", ".join(missing))
         return self
 
     @property

@@ -86,6 +86,8 @@ make format
 | `make format` | Ruff format + autofix |
 | `make typecheck` | mypy |
 | `make test` | pytest smoke tests |
+| `make migrate` | Alembic upgrade head |
+| `make seed` | Idempotent geo/topics/plans seed |
 | `make up` / `make down` | Docker Compose |
 
 ## Структура проекта
@@ -118,7 +120,7 @@ src/relocate_helper/
 
 ## Документация
 
-- [docs/architecture-decisions.md](docs/architecture-decisions.md) — ADR (очередь RQ, структура, инфраструктура)
+- [docs/data-model.md](docs/data-model.md) — ER-диаграмма и правила удаления (промпт 2)
 - [steps.md](steps.md) — чеклист промптов реализации
 
 ## Лицензия

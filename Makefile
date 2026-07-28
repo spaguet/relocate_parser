@@ -1,4 +1,4 @@
-.PHONY: install install-dev lint format typecheck test smoke up down logs clean
+.PHONY: install install-dev lint format typecheck test smoke up down logs clean migrate migrate-down seed
 
 install:
 	pip install -e .
@@ -20,6 +20,15 @@ test:
 	pytest tests -v
 
 smoke: test
+
+migrate:
+	python -m alembic upgrade head
+
+migrate-down:
+	python -m alembic downgrade -1
+
+seed:
+	python scripts/seed_db.py
 
 up:
 	docker compose up --build -d

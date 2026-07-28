@@ -50,9 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         all_ok = all(check.status == "ok" for check in checks)
         body: dict[str, object] = {
             "status": "ok" if all_ok else "degraded",
-            "checks": [
-                {"name": c.name, "status": c.status, "detail": c.detail} for c in checks
-            ],
+            "checks": [{"name": c.name, "status": c.status, "detail": c.detail} for c in checks],
         }
         return body
 
